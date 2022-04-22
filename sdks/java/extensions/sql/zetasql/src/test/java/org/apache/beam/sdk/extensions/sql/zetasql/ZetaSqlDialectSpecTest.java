@@ -3093,7 +3093,7 @@ public class ZetaSqlDialectSpecTest extends ZetaSqlTestBase {
   //testtesttest
   @Test
   public void testTest() {
-    System.out.println('\n\n\n\ntest\n\n\n\n')
+    System.out.println("%n%n%n%n test %n%n%n%n")
     String sql = "SELECT CONCAT(@p0, @p1) AS ColA";
     ImmutableMap<String, Value> params =
         ImmutableMap.of(
