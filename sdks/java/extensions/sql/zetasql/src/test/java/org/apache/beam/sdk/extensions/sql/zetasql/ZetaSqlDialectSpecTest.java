@@ -3087,29 +3087,6 @@ public class ZetaSqlDialectSpecTest extends ZetaSqlTestBase {
   }
 
   @Test
-  public void testTest() {
-    System.out.println("%n%n%n%n test %n%n%n%n");
-    String sql = "SELECT CONCAT(@p0, @p1) AS ColA";
-    ImmutableMap<String, Value> params =
-        ImmutableMap.of(
-            "p0",
-            Value.createSimpleNullValue(TypeKind.TYPE_STRING),
-            "p1",
-            Value.createSimpleNullValue(TypeKind.TYPE_STRING));
-    
-    PCollection<Row> stream = execute(sql, params);
-    
-    //final Schema schema = Schema.builder().addNullableField("field1", FieldType.STRING).build();
-    final Schema schema2 = Schema.builder().addNullableField("field2", FieldType.DATETIME).build();
-    
-    // PAssert.that(stream)
-    //     .containsInAnyOrder(Row.withSchema(schema2).addValues((String) null).build());
-    PAssert.that(stream).containsInAnyOrder(-2, -1, -3);
-
-    pipeline.run().waitUntilFinish(Duration.standardMinutes(PIPELINE_EXECUTION_WAITTIME_MINUTES));
-  }
-
-  @Test
   public void testNamedParameterQuery() {
     String sql = "SELECT @ColA AS ColA";
     ImmutableMap<String, Value> params = ImmutableMap.of("ColA", Value.createInt64Value(5));

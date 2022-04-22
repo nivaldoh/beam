@@ -215,6 +215,14 @@ task runPojoExample(type: JavaExec) {
   args = ["--runner=DirectRunner"]
 }
 
+// Run basic SQL example
+task runNiv(type: JavaExec) {
+  description = "Run dev file"
+  mainClass = "org.apache.beam.sdk.extensions.sql.example.TestBeam"
+  classpath = sourceSets.main.runtimeClasspath
+  args = ["--runner=DirectRunner"]
+}
+
 task integrationTest(type: Test) {
   def gcpProject = project.findProperty('gcpProject') ?: 'apache-beam-testing'
   def gcsTempRoot = project.findProperty('gcsTempRoot') ?: 'gs://temp-storage-for-end-to-end-tests/'
