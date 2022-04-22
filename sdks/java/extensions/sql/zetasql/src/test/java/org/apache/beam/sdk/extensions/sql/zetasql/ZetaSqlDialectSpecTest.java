@@ -3102,7 +3102,7 @@ public class ZetaSqlDialectSpecTest extends ZetaSqlTestBase {
             "p1",
             Value.createSimpleNullValue(TypeKind.TYPE_STRING));
     PCollection<Row> stream = execute(sql, params);
-    final Schema schema = Schema.builder().addNullableField("field1", FieldType.STRING).build();
+    //final Schema schema = Schema.builder().addNullableField("field1", FieldType.STRING).build();
     final Schema schema2 = Schema.builder().addNullableField("field2", FieldType.DATETIME).build();
     PAssert.that(stream)
         .containsInAnyOrder(Row.withSchema(schema2).addValues((String) null).build());
