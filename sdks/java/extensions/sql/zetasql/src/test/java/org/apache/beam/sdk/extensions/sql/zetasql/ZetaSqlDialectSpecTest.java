@@ -3086,11 +3086,6 @@ public class ZetaSqlDialectSpecTest extends ZetaSqlTestBase {
     pipeline.run().waitUntilFinish(Duration.standardMinutes(PIPELINE_EXECUTION_WAITTIME_MINUTES));
   }
 
-  //
-  //
-  //
-  //
-  //testtesttest
   @Test
   public void testTest() {
     System.out.println("%n%n%n%n test %n%n%n%n");
@@ -3101,17 +3096,15 @@ public class ZetaSqlDialectSpecTest extends ZetaSqlTestBase {
             Value.createSimpleNullValue(TypeKind.TYPE_STRING),
             "p1",
             Value.createSimpleNullValue(TypeKind.TYPE_STRING));
+    
     PCollection<Row> stream = execute(sql, params);
+    
     //final Schema schema = Schema.builder().addNullableField("field1", FieldType.STRING).build();
     final Schema schema2 = Schema.builder().addNullableField("field2", FieldType.DATETIME).build();
     PAssert.that(stream)
         .containsInAnyOrder(Row.withSchema(schema2).addValues((String) null).build());
     pipeline.run().waitUntilFinish(Duration.standardMinutes(PIPELINE_EXECUTION_WAITTIME_MINUTES));
   }
-  //
-  //
-  //
-  //
 
   @Test
   public void testNamedParameterQuery() {
