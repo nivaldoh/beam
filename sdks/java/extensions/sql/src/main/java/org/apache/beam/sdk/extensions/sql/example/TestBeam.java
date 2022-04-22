@@ -14,6 +14,8 @@ import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.Row;
 import org.apache.beam.sdk.values.TupleTag;
 
+import org.apache.beam.sdk.extensions.sql.impl.BeamSqlPipelineOptions;
+
 
 class TestBeam {
 
