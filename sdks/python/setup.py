@@ -277,7 +277,7 @@ if __name__ == '__main__':
             'freezegun>=0.3.12',
             'hypothesis<7',
             'joblib>=1.0.1',
-            'mock>=1.0.1,<3.0.0',
+            'mock>=1.0.1,<5.0.0',
             'pandas<2.0.0',
             'parameterized>=0.7.1,<0.9.0',
             'pyhamcrest>=1.9,!=1.10.0,<2.0.0',
