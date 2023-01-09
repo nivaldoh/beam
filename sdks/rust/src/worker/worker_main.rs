@@ -45,6 +45,8 @@ pub fn init() {
 // TODO(sjvanrossum): Maybe make this an associated function, e.g. Worker::main?
 #[tokio::main]
 async fn worker_main(args: WorkerArgs) -> Result<(), Box<dyn Error>> {
-    let worker = Worker::new(args.id, WorkerEndpoints::new(Some(args.control_endpoint))).await;
-    Ok(())
+    Worker::new(args.id, WorkerEndpoints::new(Some(args.control_endpoint)))
+        .await
+        .start()
+        .await
 }

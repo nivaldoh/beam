@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
+use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::net::SocketAddr;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::time::Duration;
 
-use tokio::sync::RwLock;
+use tokio::sync::{Mutex, RwLock};
 use tokio_util::sync::CancellationToken;
 use tonic::transport::Server;
 use tonic::{Request, Response, Status};
@@ -46,19 +47,23 @@ impl BeamFnExternalWorkerPool for BeamFnExternalWorkerPoolService {
         &self,
         request: Request<StartWorkerRequest>,
     ) -> Result<Response<StartWorkerResponse>, Status> {
-        let workers_guard = Arc::clone(&self.workers);
-        let mut _workers = workers_guard.write().await;
+        let req = request.into_inner();
 
-        let req = &request.get_ref();
-        let control_endpoint_url = req.control_endpoint.as_ref().map(|t| t.url.clone());
+        // Avoid creating duplicate workers
+        if let Entry::Vacant(entry) = self.workers.write().await.entry(req.worker_id.clone()) {
+            let worker = Arc::new(Mutex::new(
+                Worker::new(
+                    entry.key().clone(),
+                    WorkerEndpoints::new(req.control_endpoint.map(|descriptor| descriptor.url)),
+                )
+                .await,
+            ));
+            let inserted_worker = entry.insert(worker).clone();
 
-        let new_worker = Worker::new(
-            req.worker_id.clone(),
-            WorkerEndpoints::new(control_endpoint_url),
-        )
-        .await;
-
-        _workers.insert(req.worker_id.clone(), new_worker);
+            tokio::spawn(async move {
+                inserted_worker.lock().await.start().await.unwrap();
+            });
+        }
 
         Ok(Response::new(StartWorkerResponse::default()))
     }
@@ -67,16 +72,14 @@ impl BeamFnExternalWorkerPool for BeamFnExternalWorkerPoolService {
         &self,
         request: Request<StopWorkerRequest>,
     ) -> Result<Response<StopWorkerResponse>, Status> {
-        let workers_guard = Arc::clone(&self.workers);
-        let mut _workers = workers_guard.write().await;
-
-        let req = &request.get_ref();
-        let worker_id = &req.worker_id.to_owned();
-
-        if let Some(w) = _workers.get(worker_id) {
-            w.lock().unwrap().stop();
-            _workers.remove(worker_id);
-        };
+        if let Some(worker) = self
+            .workers
+            .write()
+            .await
+            .remove(&request.into_inner().worker_id)
+        {
+            worker.lock().await.stop().await;
+        }
 
         Ok(Response::new(StopWorkerResponse::default()))
     }
