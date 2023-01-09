@@ -20,12 +20,11 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::sync::{Arc, Mutex, RwLock};
 
-use http::Uri;
 use tokio::sync::mpsc;
 use tonic::codegen::InterceptedService;
 use tonic::metadata::{Ascii, MetadataValue};
 use tonic::service::Interceptor;
-use tonic::transport::Channel;
+use tonic::transport::{Channel, Uri};
 use tonic::Status;
 
 use crate::proto::beam_api::fn_execution::instruction_request;

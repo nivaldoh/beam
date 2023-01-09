@@ -19,7 +19,6 @@ dependencies = [
  "futures",
  "futures-core",
  "futures-util",
- "http",
  "integer-encoding",
  "moka",
  "once_cell",

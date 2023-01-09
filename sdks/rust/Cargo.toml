@@ -33,7 +33,6 @@ clap = { version = "4.0", features = ["derive"] }
 futures = "0.3.25"
 futures-core = "0.3"
 futures-util = "0.3"
-http = "0.2.8"
 integer-encoding = "3.0.4"
 moka = { version = "0.9.6", features = ["future"] }
 once_cell = "1.16.0"
