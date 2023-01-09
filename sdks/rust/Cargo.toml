@@ -23,11 +23,6 @@ edition = "2021"
 homepage = "https://beam.apache.org"
 license = "Apache-2.0"
 repository = "https://github.com/apache/beam"
-default-run = "main"
-
-[[bin]]
-name = "main"
-path = "src/main.rs"
 
 [dependencies]
 # Suggested by the compiler itself due to: https://github.com/rust-lang/rust/issues/91611

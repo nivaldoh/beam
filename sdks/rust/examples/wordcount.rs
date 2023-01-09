@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+// TODO: Implement word count example
 fn main() {
     apache_beam::worker::worker_main::init();
     println!("Hello World!");
