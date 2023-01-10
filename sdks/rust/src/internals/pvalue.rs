@@ -23,7 +23,7 @@ use std::sync::Arc;
 
 use crate::coders::coders::CoderI;
 use crate::coders::required_coders::BytesCoder;
-use crate::proto::beam_api::pipeline as proto_pipeline;
+use crate::proto::pipeline::v1 as pipeline_v1;
 
 use crate::internals::pipeline::Pipeline;
 
@@ -37,7 +37,7 @@ where
 {
     id: String,
     ptype: PType,
-    pcoll_proto: proto_pipeline::PCollection,
+    pcoll_proto: pipeline_v1::PCollection,
     pipeline: Arc<Pipeline>,
 
     phantom: PhantomData<T>,
@@ -49,7 +49,7 @@ where
 {
     pub fn new(
         ptype: PType,
-        pcoll_proto: proto_pipeline::PCollection,
+        pcoll_proto: pipeline_v1::PCollection,
         pipeline: Arc<Pipeline>,
         id: String,
     ) -> Self {
@@ -66,8 +66,8 @@ where
     pub fn new_root(pipeline: Arc<Pipeline>) -> Self {
         let pcoll_name = "root".to_string();
 
-        let proto_coder_id = pipeline.register_coder_proto(proto_pipeline::Coder {
-            spec: Some(proto_pipeline::FunctionSpec {
+        let proto_coder_id = pipeline.register_coder_proto(pipeline_v1::Coder {
+            spec: Some(pipeline_v1::FunctionSpec {
                 urn: String::from(crate::coders::urns::BYTES_CODER_URN),
                 payload: Vec::with_capacity(0),
             }),
@@ -76,15 +76,15 @@ where
 
         pipeline.register_coder::<BytesCoder, Vec<u8>>(Box::new(BytesCoder::new()));
 
-        let output_proto = proto_pipeline::PCollection {
+        let output_proto = pipeline_v1::PCollection {
             unique_name: pcoll_name.clone(),
             coder_id: proto_coder_id,
-            is_bounded: proto_pipeline::is_bounded::Enum::Bounded as i32,
+            is_bounded: pipeline_v1::is_bounded::Enum::Bounded as i32,
             windowing_strategy_id: "placeholder".to_string(),
             display_data: Vec::with_capacity(0),
         };
 
-        let impulse_proto = proto_pipeline::PTransform {
+        let impulse_proto = pipeline_v1::PTransform {
             unique_name: "root".to_string(),
             spec: None,
             subtransforms: Vec::with_capacity(0),
@@ -112,11 +112,11 @@ where
         self.pipeline.register_coder::<C, E>(coder)
     }
 
-    pub fn register_pipeline_coder_proto(&self, coder_proto: proto_pipeline::Coder) -> String {
+    pub fn register_pipeline_coder_proto(&self, coder_proto: pipeline_v1::Coder) -> String {
         self.pipeline.register_coder_proto(coder_proto)
     }
 
-    pub fn register_pipeline_proto_transform(&self, transform: proto_pipeline::PTransform) {
+    pub fn register_pipeline_proto_transform(&self, transform: pipeline_v1::PTransform) {
         self.pipeline.register_proto_transform(transform)
     }
 
@@ -201,7 +201,7 @@ where
         &self,
         input: &PValue<In>,
         pipeline: Arc<Pipeline>,
-        transform_proto: proto_pipeline::PTransform,
+        transform_proto: pipeline_v1::PTransform,
     ) -> PValue<Out>
     where
         Self: Sized,

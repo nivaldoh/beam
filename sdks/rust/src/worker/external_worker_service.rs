@@ -27,7 +27,7 @@ use tokio_util::sync::CancellationToken;
 use tonic::transport::Server;
 use tonic::{Request, Response, Status};
 
-use crate::proto::beam_api::fn_execution::{
+use crate::proto::fn_execution::v1::{
     beam_fn_external_worker_pool_server, StartWorkerRequest, StartWorkerResponse,
     StopWorkerRequest, StopWorkerResponse,
 };

@@ -28,15 +28,15 @@ use tonic::service::Interceptor;
 use tonic::transport::{Channel, Uri};
 use tonic::Status;
 
-use crate::proto::beam_api::fn_execution::{
+use crate::proto::fn_execution::v1::{
     beam_fn_control_client::BeamFnControlClient, FinalizeBundleRequest,
     GetProcessBundleDescriptorRequest, HarnessMonitoringInfosRequest, InstructionRequest,
     InstructionResponse, MonitoringInfosMetadataRequest, ProcessBundleDescriptor,
     ProcessBundleProgressRequest, ProcessBundleRequest, ProcessBundleResponse,
     ProcessBundleSplitRequest, ProcessBundleSplitResponse, RegisterRequest, RegisterResponse,
 };
-use crate::proto::beam_api::fn_execution::{instruction_request, instruction_response};
-use crate::proto::beam_api::pipeline::PTransform;
+use crate::proto::fn_execution::v1::{instruction_request, instruction_response};
+use crate::proto::pipeline::v1::PTransform;
 
 use crate::worker::operators::{create_operator, Operator, OperatorContext, OperatorI, Receiver};
 

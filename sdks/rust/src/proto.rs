@@ -16,15 +16,28 @@
  * limitations under the License.
 */
 
-// TODO: move this to SDK root?
-
-#![allow(clippy::derive_partial_eq_without_eq, clippy::enum_variant_names)]
-pub mod beam_api {
-    tonic::include_proto!("beam_api");
-
-    pub use org::apache::beam::model::expansion::v1 as expansion;
-    pub use org::apache::beam::model::fn_execution::v1 as fn_execution;
-    pub use org::apache::beam::model::interactive::v1 as interactive;
-    pub use org::apache::beam::model::job_management::v1 as job_management;
-    pub use org::apache::beam::model::pipeline::v1 as pipeline;
+pub mod expansion {
+    pub mod v1 {
+        tonic::include_proto!("org.apache.beam.model.expansion.v1");
+    }
+}
+pub mod fn_execution {
+    pub mod v1 {
+        tonic::include_proto!("org.apache.beam.model.fn_execution.v1");
+    }
+}
+pub mod interactive {
+    pub mod v1 {
+        tonic::include_proto!("org.apache.beam.model.interactive.v1");
+    }
+}
+pub mod job_management {
+    pub mod v1 {
+        tonic::include_proto!("org.apache.beam.model.job_management.v1");
+    }
+}
+pub mod pipeline {
+    pub mod v1 {
+        tonic::include_proto!("org.apache.beam.model.pipeline.v1");
+    }
 }

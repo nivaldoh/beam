@@ -25,8 +25,8 @@ use once_cell::sync::Lazy;
 use serde_json;
 
 use crate::internals::urns;
-use crate::proto::beam_api::fn_execution::{ProcessBundleDescriptor, RemoteGrpcPort};
-use crate::proto::beam_api::pipeline::PTransform;
+use crate::proto::fn_execution::v1::{ProcessBundleDescriptor, RemoteGrpcPort};
+use crate::proto::pipeline::v1::PTransform;
 
 use crate::worker::data::MultiplexingDataChannel;
 use crate::worker::sdk_worker::BundleProcessor;
