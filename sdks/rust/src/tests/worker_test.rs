@@ -23,10 +23,7 @@ mod tests {
     use serde_json;
 
     use crate::internals::urns;
-    use crate::proto::{
-        fn_execution::v1::ProcessBundleDescriptor,
-        pipeline::v1::{FunctionSpec, PTransform},
-    };
+    use crate::proto::{fn_execution_v1, pipeline_v1};
 
     use crate::{
         worker::sdk_worker::BundleProcessor,
@@ -38,10 +35,10 @@ mod tests {
         inputs: HashMap<String, String>,
         outputs: HashMap<String, String>,
         payload: Vec<u8>,
-    ) -> PTransform {
-        PTransform {
+    ) -> pipeline_v1::PTransform {
+        pipeline_v1::PTransform {
             unique_name: "".to_string(),
-            spec: Some(FunctionSpec {
+            spec: Some(pipeline_v1::FunctionSpec {
                 urn: urn.to_string(),
                 payload,
             }),
@@ -56,7 +53,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_operator_construction() {
-        let descriptor = ProcessBundleDescriptor {
+        let descriptor = fn_execution_v1::ProcessBundleDescriptor {
             id: "".to_string(),
             // Note the inverted order should still be resolved correctly
             transforms: HashMap::from([

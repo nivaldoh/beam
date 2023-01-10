@@ -41,3 +41,9 @@ pub mod pipeline {
         tonic::include_proto!("org.apache.beam.model.pipeline.v1");
     }
 }
+
+pub(crate) use expansion::v1 as expansion_v1;
+pub(crate) use fn_execution::v1 as fn_execution_v1;
+pub(crate) use interactive::v1 as interactive_v1;
+pub(crate) use job_management::v1 as job_management_v1;
+pub(crate) use pipeline::v1 as pipeline_v1;

@@ -27,26 +27,25 @@ use tokio_util::sync::CancellationToken;
 use tonic::transport::Server;
 use tonic::{Request, Response, Status};
 
-use crate::proto::fn_execution::v1::{
-    beam_fn_external_worker_pool_server, StartWorkerRequest, StartWorkerResponse,
-    StopWorkerRequest, StopWorkerResponse,
+use crate::proto::{
+    fn_execution_v1,
+    fn_execution_v1::beam_fn_external_worker_pool_server as beam_fn_external_worker_pool_server_v1,
 };
 use crate::worker::sdk_worker::{Worker, WorkerEndpoints};
-use beam_fn_external_worker_pool_server::{
-    BeamFnExternalWorkerPool, BeamFnExternalWorkerPoolServer,
-};
 
 #[derive(Debug)]
-struct BeamFnExternalWorkerPoolService {
+struct BeamFnExternalWorkerPoolV1Service {
     workers: Arc<RwLock<HashMap<String, Arc<Mutex<Worker>>>>>,
 }
 
 #[tonic::async_trait]
-impl BeamFnExternalWorkerPool for BeamFnExternalWorkerPoolService {
+impl beam_fn_external_worker_pool_server_v1::BeamFnExternalWorkerPool
+    for BeamFnExternalWorkerPoolV1Service
+{
     async fn start_worker(
         &self,
-        request: Request<StartWorkerRequest>,
-    ) -> Result<Response<StartWorkerResponse>, Status> {
+        request: Request<fn_execution_v1::StartWorkerRequest>,
+    ) -> Result<Response<fn_execution_v1::StartWorkerResponse>, Status> {
         let req = request.into_inner();
 
         // Avoid creating duplicate workers
@@ -65,13 +64,15 @@ impl BeamFnExternalWorkerPool for BeamFnExternalWorkerPoolService {
             });
         }
 
-        Ok(Response::new(StartWorkerResponse::default()))
+        Ok(Response::new(
+            fn_execution_v1::StartWorkerResponse::default(),
+        ))
     }
 
     async fn stop_worker(
         &self,
-        request: Request<StopWorkerRequest>,
-    ) -> Result<Response<StopWorkerResponse>, Status> {
+        request: Request<fn_execution_v1::StopWorkerRequest>,
+    ) -> Result<Response<fn_execution_v1::StopWorkerResponse>, Status> {
         if let Some(worker) = self
             .workers
             .write()
@@ -81,7 +82,7 @@ impl BeamFnExternalWorkerPool for BeamFnExternalWorkerPoolService {
             worker.lock().await.stop().await;
         }
 
-        Ok(Response::new(StopWorkerResponse::default()))
+        Ok(Response::new(fn_execution_v1::StopWorkerResponse::default()))
     }
 }
 
@@ -104,9 +105,11 @@ impl ExternalWorkerPool {
         // TODO: add logging
         println!("Starting loopback workers at {}", self.address);
 
-        let svc = BeamFnExternalWorkerPoolServer::new(BeamFnExternalWorkerPoolService {
-            workers: Arc::new(RwLock::new(HashMap::new())),
-        });
+        let svc = beam_fn_external_worker_pool_server_v1::BeamFnExternalWorkerPoolServer::new(
+            BeamFnExternalWorkerPoolV1Service {
+                workers: Arc::new(RwLock::new(HashMap::new())),
+            },
+        );
 
         Server::builder()
             .add_service(svc)

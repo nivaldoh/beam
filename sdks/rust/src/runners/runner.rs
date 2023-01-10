@@ -23,7 +23,7 @@ use async_trait::async_trait;
 
 use crate::internals::pipeline::Pipeline;
 use crate::internals::pvalue::PValue;
-use crate::proto::pipeline::v1 as pipeline_v1;
+use crate::proto::pipeline_v1;
 
 pub type Task = Pin<Box<dyn Future<Output = ()> + Send>>;
 

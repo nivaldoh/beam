@@ -23,7 +23,7 @@ use std::sync::Arc;
 
 use crate::coders::coders::CoderI;
 use crate::coders::required_coders::BytesCoder;
-use crate::proto::pipeline::v1 as pipeline_v1;
+use crate::proto::pipeline_v1;
 
 use crate::internals::pipeline::Pipeline;
 

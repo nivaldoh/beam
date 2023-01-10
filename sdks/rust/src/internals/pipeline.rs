@@ -21,7 +21,7 @@ use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 
 use crate::coders::coders::CoderI;
-use crate::proto::pipeline::v1 as pipeline_v1;
+use crate::proto::pipeline_v1;
 
 use crate::internals::pvalue::{flatten_pvalue, PTransform, PValue};
 

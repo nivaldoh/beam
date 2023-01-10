@@ -28,15 +28,11 @@ use tonic::service::Interceptor;
 use tonic::transport::{Channel, Uri};
 use tonic::Status;
 
-use crate::proto::fn_execution::v1::{
-    beam_fn_control_client::BeamFnControlClient, FinalizeBundleRequest,
-    GetProcessBundleDescriptorRequest, HarnessMonitoringInfosRequest, InstructionRequest,
-    InstructionResponse, MonitoringInfosMetadataRequest, ProcessBundleDescriptor,
-    ProcessBundleProgressRequest, ProcessBundleRequest, ProcessBundleResponse,
-    ProcessBundleSplitRequest, ProcessBundleSplitResponse, RegisterRequest, RegisterResponse,
+use crate::proto::{
+    fn_execution_v1, fn_execution_v1::beam_fn_control_client as beam_fn_control_client_v1,
+    fn_execution_v1::instruction_request as instruction_request_v1,
+    fn_execution_v1::instruction_response as instruction_response_v1, pipeline_v1,
 };
-use crate::proto::fn_execution::v1::{instruction_request, instruction_response};
-use crate::proto::pipeline::v1::PTransform;
 
 use crate::worker::operators::{create_operator, Operator, OperatorContext, OperatorI, Receiver};
 
@@ -68,13 +64,15 @@ type InstructionId = String;
 #[derive(Debug)]
 pub struct Worker {
     // Cheap and safe to clone
-    control_client: BeamFnControlClient<InterceptedService<Channel, WorkerIdInterceptor>>,
+    control_client: beam_fn_control_client_v1::BeamFnControlClient<
+        InterceptedService<Channel, WorkerIdInterceptor>,
+    >,
     // Cheap and safe to clone
-    control_tx: mpsc::Sender<InstructionResponse>,
-    control_rx: Arc<TokioMutex<mpsc::Receiver<InstructionResponse>>>,
+    control_tx: mpsc::Sender<fn_execution_v1::InstructionResponse>,
+    control_rx: Arc<TokioMutex<mpsc::Receiver<fn_execution_v1::InstructionResponse>>>,
     // Cheap and safe to clone
     process_bundle_descriptors:
-        moka::future::Cache<BundleDescriptorId, Arc<ProcessBundleDescriptor>>,
+        moka::future::Cache<BundleDescriptorId, Arc<fn_execution_v1::ProcessBundleDescriptor>>,
     bundle_processors: HashMap<String, BundleProcessor>,
     active_bundle_processors: HashMap<String, BundleProcessor>,
     id: String,
@@ -90,9 +88,11 @@ impl Worker {
             .connect()
             .await
             .expect("Failed to connect to control service");
-        let client =
-            BeamFnControlClient::with_interceptor(channel, WorkerIdInterceptor::new(id.clone()));
-        let (tx, rx) = mpsc::channel::<InstructionResponse>(100);
+        let client = beam_fn_control_client_v1::BeamFnControlClient::with_interceptor(
+            channel,
+            WorkerIdInterceptor::new(id.clone()),
+        );
+        let (tx, rx) = mpsc::channel::<fn_execution_v1::InstructionResponse>(100);
 
         Self {
             control_client: client,
@@ -121,25 +121,25 @@ impl Worker {
 
         while let Some(control_req) = inbound.message().await? {
             match control_req.request {
-                Some(instruction_request::Request::ProcessBundle(instr_req)) => {
+                Some(instruction_request_v1::Request::ProcessBundle(instr_req)) => {
                     self.process_bundle(control_req.instruction_id, instr_req);
                 }
-                Some(instruction_request::Request::ProcessBundleProgress(instr_req)) => {
+                Some(instruction_request_v1::Request::ProcessBundleProgress(instr_req)) => {
                     self.process_bundle_progress(control_req.instruction_id, instr_req);
                 }
-                Some(instruction_request::Request::ProcessBundleSplit(instr_req)) => {
+                Some(instruction_request_v1::Request::ProcessBundleSplit(instr_req)) => {
                     self.process_bundle_split(control_req.instruction_id, instr_req);
                 }
-                Some(instruction_request::Request::FinalizeBundle(instr_req)) => {
+                Some(instruction_request_v1::Request::FinalizeBundle(instr_req)) => {
                     self.finalize_bundle(control_req.instruction_id, instr_req);
                 }
-                Some(instruction_request::Request::MonitoringInfos(instr_req)) => {
+                Some(instruction_request_v1::Request::MonitoringInfos(instr_req)) => {
                     self.monitoring_infos(control_req.instruction_id, instr_req);
                 }
-                Some(instruction_request::Request::HarnessMonitoringInfos(instr_req)) => {
+                Some(instruction_request_v1::Request::HarnessMonitoringInfos(instr_req)) => {
                     self.harness_monitoring_infos(control_req.instruction_id, instr_req);
                 }
-                Some(instruction_request::Request::Register(instr_req)) => {
+                Some(instruction_request_v1::Request::Register(instr_req)) => {
                     self.register(control_req.instruction_id, instr_req);
                 }
                 _ => {
@@ -159,18 +159,24 @@ impl Worker {
         self.control_rx.lock().await.close()
     }
 
-    fn process_bundle(&self, instruction_id: InstructionId, request: ProcessBundleRequest) -> () {
+    fn process_bundle(
+        &self,
+        instruction_id: InstructionId,
+        request: fn_execution_v1::ProcessBundleRequest,
+    ) -> () {
         let mut client = self.control_client.clone();
         let descriptor_cache = self.process_bundle_descriptors.clone();
         tokio::spawn(async move {
             let descriptor = descriptor_cache
                 .try_get_with::<_, Status>(request.process_bundle_descriptor_id.clone(), async {
                     let res = client
-                        .get_process_bundle_descriptor(GetProcessBundleDescriptorRequest {
-                            process_bundle_descriptor_id: request
-                                .process_bundle_descriptor_id
-                                .clone(),
-                        })
+                        .get_process_bundle_descriptor(
+                            fn_execution_v1::GetProcessBundleDescriptorRequest {
+                                process_bundle_descriptor_id: request
+                                    .process_bundle_descriptor_id
+                                    .clone(),
+                            },
+                        )
                         .await?;
                     Ok(Arc::new(res.into_inner()))
                 })
@@ -183,7 +189,7 @@ impl Worker {
     fn process_bundle_progress(
         &self,
         instruction_id: InstructionId,
-        request: ProcessBundleProgressRequest,
+        request: fn_execution_v1::ProcessBundleProgressRequest,
     ) -> () {
         // TODO(sjvanrossum): Flesh out after process_bundle is sufficiently implemented
     }
@@ -191,19 +197,23 @@ impl Worker {
     fn process_bundle_split(
         &self,
         instruction_id: InstructionId,
-        request: ProcessBundleSplitRequest,
+        request: fn_execution_v1::ProcessBundleSplitRequest,
     ) -> () {
         // TODO(sjvanrossum): Flesh out after process_bundle is sufficiently implemented
     }
 
-    fn finalize_bundle(&self, instruction_id: InstructionId, request: FinalizeBundleRequest) -> () {
+    fn finalize_bundle(
+        &self,
+        instruction_id: InstructionId,
+        request: fn_execution_v1::FinalizeBundleRequest,
+    ) -> () {
         // TODO(sjvanrossum): Flesh out after process_bundle is sufficiently implemented.
     }
 
     fn monitoring_infos(
         &self,
         instruction_id: InstructionId,
-        request: MonitoringInfosMetadataRequest,
+        request: fn_execution_v1::MonitoringInfosMetadataRequest,
     ) -> () {
         // TODO: Implement
     }
@@ -211,12 +221,16 @@ impl Worker {
     fn harness_monitoring_infos(
         &self,
         instruction_id: InstructionId,
-        request: HarnessMonitoringInfosRequest,
+        request: fn_execution_v1::HarnessMonitoringInfosRequest,
     ) -> () {
         // TODO: Implement
     }
 
-    fn register(&self, instruction_id: InstructionId, request: RegisterRequest) -> () {
+    fn register(
+        &self,
+        instruction_id: InstructionId,
+        request: fn_execution_v1::RegisterRequest,
+    ) -> () {
         let descriptor_cache = self.process_bundle_descriptors.clone();
         let tx = self.control_tx.clone();
         tokio::spawn(async move {
@@ -226,11 +240,11 @@ impl Worker {
                     .await;
             }
 
-            tx.send(InstructionResponse {
+            tx.send(fn_execution_v1::InstructionResponse {
                 instruction_id,
                 error: String::default(),
-                response: Some(instruction_response::Response::Register(
-                    RegisterResponse::default(),
+                response: Some(instruction_response_v1::Response::Register(
+                    fn_execution_v1::RegisterResponse::default(),
                 )),
             })
             .await
@@ -242,9 +256,9 @@ impl Worker {
         &self,
         instruction_id: InstructionId,
         error: String,
-        tx: mpsc::Sender<InstructionResponse>,
-    ) -> Result<(), mpsc::error::SendError<InstructionResponse>> {
-        tx.send(InstructionResponse {
+        tx: mpsc::Sender<fn_execution_v1::InstructionResponse>,
+    ) -> Result<(), mpsc::error::SendError<fn_execution_v1::InstructionResponse>> {
+        tx.send(fn_execution_v1::InstructionResponse {
             instruction_id: instruction_id,
             error: error,
             response: None,
@@ -272,7 +286,7 @@ impl WorkerEndpoints {
 
 #[derive(Debug)]
 pub struct BundleProcessor {
-    descriptor: Arc<ProcessBundleDescriptor>,
+    descriptor: Arc<fn_execution_v1::ProcessBundleDescriptor>,
     creation_ordered_operators: Mutex<Vec<Arc<Operator>>>,
     topologically_ordered_operators: RwLock<Vec<Arc<Operator>>>,
 
@@ -284,7 +298,10 @@ pub struct BundleProcessor {
 }
 
 impl BundleProcessor {
-    pub fn new(descriptor: Arc<ProcessBundleDescriptor>, root_urns: &[&'static str]) -> Arc<Self> {
+    pub fn new(
+        descriptor: Arc<fn_execution_v1::ProcessBundleDescriptor>,
+        root_urns: &[&'static str],
+    ) -> Arc<Self> {
         let mut consumers: HashMap<String, Vec<String>> = HashMap::new();
         for (transform_id, ptransform) in descriptor.transforms.iter() {
             if is_primitive(ptransform) {
@@ -435,6 +452,6 @@ impl BundleProcessor {
 }
 
 // TODO
-fn is_primitive(transform: &PTransform) -> bool {
+fn is_primitive(transform: &pipeline_v1::PTransform) -> bool {
     true
 }
