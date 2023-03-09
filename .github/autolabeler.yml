@@ -29,6 +29,7 @@ learning: ["learning/**/*"]
 model: ["model/**/*"]
 python: ["sdks/python/**/*", "learning/katas/python/**/*"]
 typescript: ["sdks/typescript/**/*"]
+rust: ["sdks/rust/**/*"]
 vendor: ["vendor/**/*"]
 website: ["website/**/*"]
 

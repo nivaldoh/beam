@@ -89,6 +89,7 @@ jobs:
 ### Issue Management
 
 Phrases self-assign, close, or manage labels on an issue:
+
 | Phrase | Effect |
 |--------|--------|
 | `.take-issue` | Self-assign the issue |
