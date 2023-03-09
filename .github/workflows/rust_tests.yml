@@ -1,0 +1,38 @@
+name: Rust Tests
+on:
+  push:
+    branches: ['rust_sdk']
+    tags: ['v*']
+
+jobs:
+  rust_tests:
+    name: 'Rust quality code and unit test'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+          components: rustfmt, clippy
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+      - name: Run fmt
+        shell: bash
+        run: |
+          cargo fmt --all -- --check
+      - name: Run clippy
+        shell: bash
+        run: |
+          cargo clippy -- -D warnings
+      - name: Run test
+        shell: bash
+        run: |
+          cargo test -- --skip target/debug
