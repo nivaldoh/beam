@@ -17,8 +17,9 @@
 
 name: Generate issue report
 on:
-  schedule:
-  - cron: "0 10 * * 1-5"
+  #FIXME: Temporal comment schedule, this should only run in principal repository (apache/beam)
+  #schedule:
+  #- cron: "0 10 * * 1-5"
   workflow_dispatch:
 
 jobs:

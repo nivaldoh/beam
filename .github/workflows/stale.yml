@@ -16,8 +16,9 @@
 name: Mark and close stale pull requests
 
 on:
-  schedule:
-  - cron: '33 12 * * *'
+  #FIXME: Temporal comment schedule, this should only run in principal repository (apache/beam)
+  #schedule:
+  #- cron: '33 12 * * *'
 permissions: read-all
 jobs:
   stale:

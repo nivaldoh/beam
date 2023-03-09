@@ -20,8 +20,9 @@
 name: Go tests
 
 on:
-  schedule:
-    - cron: '10 2 * * *'
+  #FIXME: Temporal comment schedule, this should only run in principal repository (apache/beam)
+  #schedule:
+  #  - cron: '10 2 * * *'
   push:
     branches: ['master', 'release-*']
     tags: ['v*']

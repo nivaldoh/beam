@@ -20,8 +20,9 @@
 name: Run performance alerting tool on Python load/performance/benchmark tests.
 
 on:
-  schedule:
-    - cron: '5 22 * * *'
+  #FIXME: Temporal comment schedule, this should only run in principal repository (apache/beam)
+  #schedule:
+  #  - cron: '5 22 * * *'
 
 jobs:
   python_run_change_point_analysis:

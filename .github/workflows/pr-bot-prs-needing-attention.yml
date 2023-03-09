@@ -17,8 +17,9 @@ name: pr-bot-prs-needing-attention
 
 # Run every day at 12:07 UTC
 on:
-  schedule:
-  - cron: '7 12 * * *'
+  #FIXME: Temporal comment schedule, this should only run in principal repository (apache/beam)
+  #schedule:
+  #- cron: '7 12 * * *'
   workflow_dispatch:
 
 jobs:

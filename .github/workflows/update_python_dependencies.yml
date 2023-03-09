@@ -21,8 +21,9 @@
 name: Update Python Depedencies
 
 on:
-  schedule:
-  - cron: "0 0 * * 0"
+  #FIXME: Temporal comment schedule, this should should only run in principal repository (apache/beam)
+  #schedule:
+  #- cron: "0 0 * * 0"
   workflow_dispatch:
 permissions: read-all
 

@@ -17,8 +17,9 @@ name: pr-bot-update-reviewers
 
 # Run every week on Sunday at 16:05 UTC
 on:
-  schedule:
-  - cron: '5 16 * * 0'
+  #FIXME: Temporal comment schedule, this should only run in principal repository (apache/beam)
+  #schedule:
+  #- cron: '5 16 * * 0'
   workflow_dispatch:
 
 jobs:
