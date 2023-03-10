@@ -114,6 +114,7 @@ impl ExternalWorkerPool {
     }
 
     // TODO: implement timeout for graceful shutdown
+    #[allow(unused)] // FIXME
     pub async fn stop(&self, timeout: Duration) {
         // TODO: add logging
         println!("Shutting down external workers.");

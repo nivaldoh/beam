@@ -37,6 +37,7 @@ where
 {
     id: String,
     ptype: PType,
+    #[allow(unused)] // FIXME
     pcoll_proto: proto_pipeline::PCollection,
     pipeline: Arc<Pipeline>,
 
@@ -190,6 +191,7 @@ where
     In: Clone + Send,
     Out: Clone + Send,
 {
+    #[allow(unused)] // FIXME
     fn expand(&self, input: &PValue<In>) -> PValue<Out>
     where
         Self: Sized,
@@ -197,6 +199,7 @@ where
         unimplemented!()
     }
 
+    #[allow(unused)] // FIXME
     fn expand_internal(
         &self,
         input: &PValue<In>,

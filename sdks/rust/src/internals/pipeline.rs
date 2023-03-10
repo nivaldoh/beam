@@ -157,6 +157,7 @@ impl<'a> Pipeline {
             .insert(transform.unique_name.clone(), transform);
     }
 
+    #[allow(unused)] // FIXME
     pub fn pre_apply_transform<In, Out, F>(
         &self,
         transform: &F,
@@ -249,7 +250,7 @@ impl<'a> Pipeline {
         Out: Clone + Send,
         F: PTransform<In, Out> + Send,
     {
-        let (transform_id, transform_proto) = self.pre_apply_transform(&transform, &input);
+        let (transform_id, transform_proto) = self.pre_apply_transform(&transform, input);
 
         let mut transform_stack = self.transform_stack.lock().unwrap();
 
@@ -266,6 +267,7 @@ impl<'a> Pipeline {
     }
 
     // TODO: deal with bounds and windows
+    #[allow(unused)] // FIXME
     pub fn post_apply_transform<In, Out, F>(
         &self,
         transform: F,
@@ -297,6 +299,7 @@ impl<'a> Pipeline {
         )
     }
 
+    #[allow(clippy::field_reassign_with_default)] // FIXME
     pub fn create_pcollection_id_internal(&self, coder_id: String) -> String {
         let pcoll_id = self.context.create_unique_name("pc".to_string());
         let mut pcoll_proto: proto_pipeline::PCollection = proto_pipeline::PCollection::default();

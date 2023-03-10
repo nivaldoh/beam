@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+#[allow(clippy::module_inception)] // FIXME
 pub mod coders;
 pub mod required_coders;
 pub mod rust_coders;

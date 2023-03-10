@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-use std::any::Any;
 use std::collections::HashMap;
 use std::fmt;
 use std::sync::{Arc, Mutex};
@@ -25,10 +24,9 @@ use once_cell::sync::Lazy;
 use serde_json;
 
 use crate::internals::urns;
-use crate::proto::beam_api::fn_execution::{ProcessBundleDescriptor, RemoteGrpcPort};
+use crate::proto::beam_api::fn_execution::ProcessBundleDescriptor;
 use crate::proto::beam_api::pipeline::PTransform;
 
-use crate::worker::data::MultiplexingDataChannel;
 use crate::worker::sdk_worker::BundleProcessor;
 use crate::worker::test_utils::RECORDING_OPERATOR_LOGS;
 
@@ -72,9 +70,11 @@ pub enum Operator {
     // Test operators
     Create(CreateOperator),
     Recording(RecordingOperator),
+    #[allow(dead_code)] // FIXME
     Partitioning,
 
     // Production operators
+    #[allow(dead_code)] // FIXME
     DataSource,
 }
 
@@ -191,6 +191,7 @@ pub struct OperatorContext {
 }
 
 impl fmt::Debug for OperatorContext {
+    #[allow(clippy::needless_lifetimes)] // FIXME
     fn fmt<'a>(&'a self, o: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         o.debug_struct("OperatorContext")
             .field("descriptor", &self.descriptor)
@@ -201,6 +202,7 @@ impl fmt::Debug for OperatorContext {
 
 #[derive(Clone, Debug)]
 pub enum WindowedValue {
+    #[allow(dead_code)] // FIXME
     Null,
     Array(Vec<Arc<WindowedValue>>),
     String(String),
@@ -211,6 +213,7 @@ pub enum WindowedValue {
 
 // ******* Operator definitions *******
 
+#[allow(unused)] // FIXME
 #[derive(Debug)]
 pub struct CreateOperator {
     transform_id: Arc<String>,
@@ -278,15 +281,13 @@ impl OperatorI for CreateOperator {
         }
     }
 
-    fn process(&self, value: WindowedValue) {
-        ()
-    }
+    #[allow(unused)] // FIXME
+    fn process(&self, value: WindowedValue) {}
 
-    fn finish_bundle(&self) {
-        ()
-    }
+    fn finish_bundle(&self) {}
 }
 
+#[allow(unused)] // FIXME
 #[derive(Debug)]
 pub struct RecordingOperator {
     transform_id: Arc<String>,
@@ -317,7 +318,7 @@ impl OperatorI for RecordingOperator {
             transform_id,
             transform,
             context,
-            operator_discriminant: operator_discriminant,
+            operator_discriminant,
             receivers,
         }
     }

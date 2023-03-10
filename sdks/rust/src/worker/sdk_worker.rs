@@ -31,10 +31,9 @@ use tonic::Status;
 use crate::proto::beam_api::fn_execution::instruction_request;
 use crate::proto::beam_api::fn_execution::{
     beam_fn_control_client::BeamFnControlClient, FinalizeBundleRequest,
-    GetProcessBundleDescriptorRequest, HarnessMonitoringInfosRequest, InstructionRequest,
-    InstructionResponse, MonitoringInfosMetadataRequest, ProcessBundleDescriptor,
-    ProcessBundleProgressRequest, ProcessBundleRequest, ProcessBundleResponse,
-    ProcessBundleSplitRequest, ProcessBundleSplitResponse, RegisterRequest,
+    GetProcessBundleDescriptorRequest, HarnessMonitoringInfosRequest, InstructionResponse,
+    MonitoringInfosMetadataRequest, ProcessBundleDescriptor, ProcessBundleProgressRequest,
+    ProcessBundleRequest, ProcessBundleSplitRequest, RegisterRequest,
 };
 use crate::proto::beam_api::pipeline::PTransform;
 
@@ -61,11 +60,13 @@ impl Interceptor for WorkerIdInterceptor {
 }
 
 type BundleDescriptorId = String;
+#[allow(unused)] // FIXME
 type InstructionId = String;
 
 // TODO(sjvanrossum): Convert simple map caches to concurrent caches.
 // Using concurrent caches removes the need to synchronize on the worker instance in every context.
 #[derive(Debug)]
+#[allow(unused)] // FIXME
 pub struct Worker {
     // Cheap and safe to clone
     control_client: BeamFnControlClient<InterceptedService<Channel, WorkerIdInterceptor>>,
@@ -155,10 +156,11 @@ impl Worker {
         todo!()
     }
 
-    fn process_bundle(&self, request: ProcessBundleRequest) -> () {
+    fn process_bundle(&self, request: ProcessBundleRequest) {
         let mut client = self.control_client.clone();
         let descriptor_cache = self.process_bundle_descriptors.clone();
         tokio::spawn(async move {
+            #[allow(unused)] // FIXME
             let descriptor = descriptor_cache
                 .try_get_with::<_, Status>(request.process_bundle_descriptor_id.clone(), async {
                     let res = client
@@ -176,27 +178,33 @@ impl Worker {
         });
     }
 
-    fn process_bundle_progress(&self, request: ProcessBundleProgressRequest) -> () {
+    #[allow(unused)] // FIXME
+    fn process_bundle_progress(&self, request: ProcessBundleProgressRequest) {
         // TODO(sjvanrossum): Flesh out after process_bundle is sufficiently implemented
     }
 
-    fn process_bundle_split(&self, request: ProcessBundleSplitRequest) -> () {
+    #[allow(unused)] // FIXME
+    fn process_bundle_split(&self, request: ProcessBundleSplitRequest) {
         // TODO(sjvanrossum): Flesh out after process_bundle is sufficiently implemented
     }
 
-    fn finalize_bundle(&self, request: FinalizeBundleRequest) -> () {
+    #[allow(unused)] // FIXME
+    fn finalize_bundle(&self, request: FinalizeBundleRequest) {
         // TODO(sjvanrossum): Flesh out after process_bundle is sufficiently implemented.
     }
 
-    fn monitoring_infos(&self, request: MonitoringInfosMetadataRequest) -> () {
+    #[allow(unused)] // FIXME
+    fn monitoring_infos(&self, request: MonitoringInfosMetadataRequest) {
         // TODO: Implement
     }
 
-    fn harness_monitoring_infos(&self, request: HarnessMonitoringInfosRequest) -> () {
+    #[allow(unused)] // FIXME
+    fn harness_monitoring_infos(&self, request: HarnessMonitoringInfosRequest) {
         // TODO: Implement
     }
 
-    fn register(&self, request: RegisterRequest) -> () {
+    #[allow(unused)] // FIXME
+    fn register(&self, request: RegisterRequest) {
         // TODO: Implement or maybe respond with a failure since this is deprecated
     }
 }
@@ -326,8 +334,8 @@ impl BundleProcessor {
 
         let operator_opt = operators.get(&transform_id);
 
-        if operator_opt.is_some() {
-            operator_opt.unwrap().clone()
+        if let Some(arc) = operator_opt {
+            arc.clone()
         } else {
             let descriptor = bundle_processor.descriptor.clone();
             drop(operators);
@@ -383,6 +391,7 @@ impl BundleProcessor {
 }
 
 // TODO
+#[allow(unused)] // FIXME
 fn is_primitive(transform: &PTransform) -> bool {
     true
 }

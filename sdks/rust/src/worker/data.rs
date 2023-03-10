@@ -16,4 +16,5 @@
  * limitations under the License.
  */
 
+#[allow(dead_code)] // FIXME
 pub struct MultiplexingDataChannel;

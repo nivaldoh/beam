@@ -135,6 +135,7 @@ impl Default for BytesCoder {
 }
 
 impl fmt::Debug for BytesCoder {
+    #[allow(clippy::needless_lifetimes)] // FIXME
     fn fmt<'a>(&'a self, o: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         o.debug_struct("BytesCoder")
             .field("urn", &self.urn)
@@ -175,6 +176,7 @@ where
 #[derive(Clone)]
 pub struct KVCoder<KV> {
     coder_type: CoderTypeDiscriminants,
+    #[allow(unused)] // FIXME
     urn: &'static str,
 
     phantom: PhantomData<KV>,
@@ -188,6 +190,7 @@ impl<K, V> CoderI<KV<K, V>> for KVCoder<KV<K, V>> {
     /// Encode the input element (a key-value pair) into a byte output stream. They key and value are encoded one after the
     /// other (first key, then value). The key is encoded with `Context::NeedsDelimiters`, while the value is encoded with
     /// the input context of the `KVCoder`.
+    #[allow(unused)] // FIXME
     fn encode(
         &self,
         element: KV<K, V>,
@@ -198,6 +201,7 @@ impl<K, V> CoderI<KV<K, V>> for KVCoder<KV<K, V>> {
     }
 
     /// Decode the input byte stream into a `KV` element
+    #[allow(unused)] // FIXME
     fn decode(&self, reader: &mut dyn Read, context: &Context) -> Result<KV<K, V>, io::Error> {
         todo!()
     }
@@ -207,6 +211,7 @@ impl<K, V> CoderI<KV<K, V>> for KVCoder<KV<K, V>> {
 #[derive(Clone)]
 pub struct IterableCoder<T> {
     coder_type: CoderTypeDiscriminants,
+    #[allow(unused)] // FIXME
     urn: &'static str,
 
     phantom: PhantomData<T>,
@@ -229,6 +234,7 @@ impl<T> CoderI<Iterable<T>> for IterableCoder<T> {
     ///     of `-1` is encoded in the first position (instead of the length), and
     ///
     /// Then, each element is encoded individually in `Context::NeedsDelimiters`.
+    #[allow(unused)] // FIXME
     fn encode(
         &self,
         element: Iterable<T>,
@@ -239,6 +245,7 @@ impl<T> CoderI<Iterable<T>> for IterableCoder<T> {
     }
 
     /// Decode the input byte stream into a `Iterable` element
+    #[allow(unused)] // FIXME
     fn decode(&self, reader: &mut dyn Read, context: &Context) -> Result<Iterable<T>, io::Error> {
         todo!()
     }

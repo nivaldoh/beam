@@ -92,6 +92,7 @@ impl Default for StrUtf8Coder {
 }
 
 impl fmt::Debug for StrUtf8Coder {
+    #[allow(clippy::needless_lifetimes)] // FIXME
     fn fmt<'a>(&'a self, o: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         o.debug_struct("StrUtf8Coder")
             .field("urn", &self.urn)
@@ -146,6 +147,7 @@ impl Default for VarIntCoder {
 }
 
 impl fmt::Debug for VarIntCoder {
+    #[allow(clippy::needless_lifetimes)] // FIXME
     fn fmt<'a>(&'a self, o: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         o.debug_struct("VarIntCoder")
             .field("urn", &self.urn)

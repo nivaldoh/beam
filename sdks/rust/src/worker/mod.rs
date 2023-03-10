@@ -30,6 +30,7 @@ pub mod test_utils {
 
     pub static mut RECORDING_OPERATOR_LOGS: Mutex<Vec<String>> = Mutex::new(Vec::new());
 
+    #[allow(clippy::missing_safety_doc)]
     pub unsafe fn reset_log() {
         let mut log = RECORDING_OPERATOR_LOGS.lock().unwrap();
         *log.as_mut() = Vec::new();

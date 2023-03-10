@@ -39,6 +39,7 @@ impl Impulse {
 pub type Never = bool;
 
 impl PTransform<Never, Vec<u8>> for Impulse {
+    #[allow(unused)] // FIXME
     fn expand_internal(
         &self,
         input: &PValue<Never>,
