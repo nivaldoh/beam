@@ -3,6 +3,11 @@ on:
   push:
     branches: ['rust_sdk']
     tags: ['v*']
+    paths: ['sdks/rust/**', 'Cargo.toml']
+  pull_request:
+    branches: ['rust_sdk']
+    tags: ['v*']
+    paths: ['sdks/rust/**', 'Cargo.toml']
 
 jobs:
   rust_tests:
